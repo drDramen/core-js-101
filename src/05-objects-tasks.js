@@ -6,7 +6,6 @@
  *                                                                                                *
  ************************************************************************************************ */
 
-
 /**
  * Returns the rectangle object with width and height parameters and getArea() method
  *
@@ -20,6 +19,7 @@
  *    console.log(r.height);      // => 20
  *    console.log(r.getArea());   // => 200
  */
+// eslint-disable-next-line max-classes-per-file
 class Rectangle {
   constructor(width, height) {
     this.width = width;
@@ -30,7 +30,6 @@ class Rectangle {
     return this.height * this.width;
   }
 }
-
 
 /**
  * Returns the JSON representation of specified object
@@ -45,7 +44,6 @@ class Rectangle {
 function getJSON(obj) {
   return JSON.stringify(obj);
 }
-
 
 /**
  * Returns the object of specified type from JSON representation
@@ -65,7 +63,6 @@ function fromJSON(proto, json) {
 
   return object;
 }
-
 
 /**
  * Css selectors builder
@@ -121,33 +118,111 @@ function fromJSON(proto, json) {
  *  For more examples see unit tests.
  */
 
+class Selector {
+  constructor() {
+    this.selector = '';
+    this.order = 0;
+  }
+
+  element(value) {
+    const order = 1;
+    this.checkOrder(order);
+    this.order = order;
+    this.selector += value;
+    return this;
+  }
+
+  id(value) {
+    const order = 2;
+    this.checkOrder(order);
+    this.order = order;
+    this.selector += `#${value}`;
+    return this;
+  }
+
+  class(value) {
+    const order = 3;
+    this.checkOrder(order);
+    this.order = order;
+    this.selector += `.${value}`;
+    return this;
+  }
+
+  attr(value) {
+    const order = 4;
+    this.checkOrder(order);
+    this.order = order;
+    this.selector += `[${value}]`;
+    return this;
+  }
+
+  pseudoClass(value) {
+    const order = 5;
+    this.checkOrder(order);
+    this.order = order;
+    this.selector += `:${value}`;
+    return this;
+  }
+
+  pseudoElement(value) {
+    const order = 6;
+    this.checkOrder(order);
+    this.order = order;
+    this.selector += `::${value}`;
+    return this;
+  }
+
+  combine(selector1, combinator, selector2) {
+    this.selector = `${selector1.stringify()} ${combinator} ${selector2.stringify()}`;
+    return this;
+  }
+
+  stringify() {
+    return this.selector;
+  }
+
+  checkOrder(order) {
+    if (this.order > order) {
+      throw new Error(
+        'Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element',
+      );
+    }
+
+    if (this.order === order && [1, 2, 6].includes(order)) {
+      throw new Error(
+        'Element, id and pseudo-element should not occur more then one time inside the selector',
+      );
+    }
+  }
+}
+
 const cssSelectorBuilder = {
-  element(/* value */) {
-    throw new Error('Not implemented');
+  element(value) {
+    return new Selector().element(value);
   },
 
-  id(/* value */) {
-    throw new Error('Not implemented');
+  id(value) {
+    return new Selector().id(value);
   },
 
-  class(/* value */) {
-    throw new Error('Not implemented');
+  class(value) {
+    return new Selector().class(value);
   },
 
-  attr(/* value */) {
-    throw new Error('Not implemented');
+  attr(value) {
+    return new Selector().attr(value);
   },
 
-  pseudoClass(/* value */) {
-    throw new Error('Not implemented');
+  pseudoClass(value) {
+    return new Selector().pseudoClass(value);
   },
 
-  pseudoElement(/* value */) {
-    throw new Error('Not implemented');
+  pseudoElement(value) {
+    return new Selector().pseudoElement(value);
   },
 
-  combine(/* selector1, combinator, selector2 */) {
-    throw new Error('Not implemented');
+  combine(selector1, combinator, selector2) {
+    return new Selector().combine(selector1, combinator, selector2);
   },
 };
 

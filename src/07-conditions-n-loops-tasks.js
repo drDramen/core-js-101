@@ -427,8 +427,22 @@ function toNaryString(num, n) {
  *   ['/web/assets/style.css', '/.bin/mocha',  '/read.me'] => '/'
  *   ['/web/favicon.ico', '/web-scripts/dump', '/verbalizer/logs'] => '/'
  */
-function getCommonDirectoryPath(/* pathes */) {
-  throw new Error('Not implemented');
+function getCommonDirectoryPath(pathes) {
+  const pathesWithParts = pathes.map((path) => path.match(/\/|[^/]*/g).slice(0, -1));
+  const [referencePath, ...restPathes] = pathesWithParts;
+  let commonDirectoryPath = '';
+
+  for (let i = 0; i < referencePath.length; i += 1) {
+    const part = referencePath[i];
+    const isEveryStartWith = restPathes.every((path) => part === path[i]);
+
+    if (!isEveryStartWith) {
+      return commonDirectoryPath;
+    }
+    commonDirectoryPath += part;
+  }
+
+  return commonDirectoryPath;
 }
 
 
